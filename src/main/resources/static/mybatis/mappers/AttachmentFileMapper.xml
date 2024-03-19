@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno.portpolio.common.file.mapper.AttachmentFileMapper">
+	
+	<insert id="firstInsertAttachmentFile" parameterType="com.inno.portpolio.common.file.vo.AttachmentFileVO">
+		<selectKey order="BEFORE" keyProperty="atchmnflNo" keyColumn="ATCHMNFL_NO" resultType="String">
+			SELECT
+			    CONCAT(DATE_FORMAT(CURDATE(),'%y%m%d'), LPAD(COALESCE(MAX(SUBSTRING(ATCHMNFL_NO, 7)),0) + 1, 5, '0'))
+			FROM
+			    ATTACHMENT_FILE
+			WHERE
+			    SUBSTRING(ATCHMNFL_NO, 1, 6) = DATE_FORMAT(CURDATE(),'%y%m%d')
+		</selectKey>
+		INSERT INTO ATTACHMENT_FILE (
+			  ATCHMNFL_NO
+			, ATCHMNFL_SN
+			, ATCHMNFL_NM
+			, ATCHMNFL_STRE_NM
+			, ATCHMNFL_STRE_PATH
+			, ATCHMNFL_MG
+			, ATCHMNFL_INDICT_MG
+			, ATCHMNFL_MIME_TYPE
+		) VALUES (
+			#{atchmnflNo,jdbcType=VARCHAR}
+			, #{atchmnflSn,jdbcType=INTEGER}
+			, #{atchmnflNm,jdbcType=VARCHAR}
+			, #{atchmnflStreNm,jdbcType=VARCHAR}
+			, #{atchmnflStrePath,jdbcType=VARCHAR}
+			, #{atchmnflMg,jdbcType=NUMERIC}
+			, #{atchmnflIndictMg,jdbcType=VARCHAR}
+			, #{atchmnflMimeType,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<insert id="afterInsertAttachmentFile" parameterType="com.inno.portpolio.common.file.vo.AttachmentFileVO">
+		INSERT INTO ATTACHMENT_FILE (
+			  ATCHMNFL_NO
+			, ATCHMNFL_SN
+			, ATCHMNFL_NM
+			, ATCHMNFL_STRE_NM
+			, ATCHMNFL_STRE_PATH
+			, ATCHMNFL_MG
+			, ATCHMNFL_INDICT_MG
+			, ATCHMNFL_MIME_TYPE
+		) VALUES (
+			#{atchmnflNo,jdbcType=VARCHAR}
+			, #{atchmnflSn,jdbcType=INTEGER}
+			, #{atchmnflNm,jdbcType=VARCHAR}
+			, #{atchmnflStreNm,jdbcType=VARCHAR}
+			, #{atchmnflStrePath,jdbcType=VARCHAR}
+			, #{atchmnflMg,jdbcType=NUMERIC}
+			, #{atchmnflIndictMg,jdbcType=VARCHAR}
+			, #{atchmnflMimeType,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<delete id="deleteAttachmentFile" parameterType="com.inno.portpolio.common.file.vo.AttachmentFileVO">
+		
+		DELETE ATTACHMENT_FILE
+		
+		WHERE ATCHMNFL_NO = #{atchmnflNo,jdbcType=VARCHAR}
+		AND ATCHMNFL_SN = #{atchmnflSn,jdbcType=INTEGER}
+		AND ATCHNNFL_STRE_NM = #{atchmnflStreNm,jdbcType=VARCHAR}
+	</delete>
+	
+	<select id="selectAttachmentFile" parameterType="String" resultType="com.inno.portpolio.common.file.vo.AttachmentFileVO">
+		    SELECT   A.ATCHMNFL_NO,
+                     A.ATCHMNFL_SN,
+                     A.ATCHMNFL_NM,
+                     A.ATCHMNFL_STRE_NM,
+                     A.ATCHMNFL_STRE_PATH,
+                     A.ATCHMNFL_MG,
+                     A.ATCHMNFL_INDICT_MG,
+                     A.ATCHMNFL_MIME_TYPE
+                                                      
+			FROM     ATTACHMENT_FILE A 
+			
+			WHERE    A.ATCHMNFL_NO = #{atchmnflNo,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 파일 다운로드 -->
+	<select id="selectAttachmentFileOne" parameterType="com.inno.portpolio.common.file.vo.AttachmentFileVO" resultType="com.inno.portpolio.common.file.vo.AttachmentFileVO">
+			SELECT   A.ATCHMNFL_NO,
+                     A.ATCHMNFL_SN,
+                     A.ATCHMNFL_NM,
+                     A.ATCHMNFL_STRE_NM,
+                     A.ATCHMNFL_STRE_PATH,
+                     A.ATCHMNFL_MG,
+                     A.ATCHMNFL_INDICT_MG,
+                     A.ATCHMNFL_MIME_TYPE
+                                                      
+			FROM     ATTACHMENT_FILE A 
+			
+			WHERE    A.ATCHMNFL_NO = #{atchmnflNo,jdbcType=VARCHAR}
+			  AND    A.ATCHMNFL_SN = #{atchmnflSn,jdbcType=INTEGER}
+	</select>
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno.portpolio.user.mapper.UsersMapper">
+	
+	<!-- 회원가입 기본정보 -->
+	<insert id="register" parameterType="com.inno.portpolio.user.vo.UserVO">
+		INSERT INTO USER(   USER_ID,
+							USER_PW,
+							USER_NM,
+							USER_TEL,
+							USER_EMAIL,
+							USER_INTRODUCE
+						 )
+				   VALUES(  #{userId,jdbcType=VARCHAR},
+							#{userPw,jdbcType=VARCHAR},
+							#{userNm,jdbcType=VARCHAR},
+							#{userTel,jdbcType=VARCHAR},
+							#{userEmail,jdbcType=VARCHAR},
+							#{userIntroduce}
+						 )
+	</insert>
+	
+	<!-- 회원가입 시 권한 등록 -->
+	<insert id="authorityRegister" parameterType="com.inno.portpolio.user.vo.AuthorityVO">
+		INSERT INTO AUTHORITY( USER_ID,
+							   AUTHOR_NM)
+							   
+					   VALUES(#{userId,jdbcType=VARCHAR},
+							 #{authorNm,jdbcType=VARCHAR}
+						     )
+	</insert>
+	
+	<!-- 로그인 시 시큐리티 인증 인가 정보 조회 -->
+	<select id="loadUserByUsername" parameterType="String" resultType="Map">
+		SELECT  U.USER_ID
+		       ,U.USER_PW
+			   ,U.USER_NM
+			   ,U.USER_TEL
+		       ,U.USER_EMAIL
+		       ,U.USER_INTRODUCE
+		       ,A.AUTHOR_NM
+		
+		FROM USER U LEFT OUTER JOIN AUTHORITY A ON (A.USER_ID = U.USER_ID)
+		
+		WHERE U.USER_ID = #{userId,jdbcType=VARCHAR}
+	</select>
+</mapper>
+

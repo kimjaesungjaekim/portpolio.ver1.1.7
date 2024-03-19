@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security5"
+    layout:fragment="content">
+
+<head>
+	<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+	<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+	
+    <meta charset="UTF-8">
+    <title>QnA</title>
+    
+	<style>
+	    #qnaAddBtn {
+	        float: right; 
+	        margin-right: 10px; 
+	    }
+	    .clearfix::after {
+	        content: "";
+	        clear: both;
+	        display: table;
+	    }
+	</style>
+</head>
+<body>
+<div class="container-fluid row-lg-30">
+	<!-- Begin Page Content -->
+	<div class="container-fluid">
+		<!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">QnA</h1>
+        </div>
+        
+	    <div class="card card-body">
+	        <div class="sub_top_wrap">
+			      <div class="sub_top_wrap">
+	
+	                       <!-- selectbox -->
+	                       <div class="s_option">
+	                           <div class="select-container">
+	                              <select class="form-control bg-light border-0 small" id="keyword">
+			                    <option value="" selected>전체</option>
+			                    <option value="userId">작성자</option>
+			                    <option value="qestnTitle">제목</option>
+			                    <option value="qestnContent">내용</option>
+			                </select>
+	                           </div>
+	                       </div>
+	                       
+	                       <!-- search -->
+	                       <div id="searchUI" class="d-none d-sm-inline-block  ml-md-3 my-2 my-md-0 navbar-search">
+	                           <div class="input-group wd300 ft_right">
+	                               <input type="text" name="condition" class="form-control bg-light border-0 small" aria-label="Search" aria-describedby="basic-addon2">
+	                               <div class="input-group-append">
+	                                   <button class="btn btn-primary" id="searchBtn" type="button">
+	                                       <i class="fas fa-search fa-sm" ></i>
+	                                   </button>
+	                               </div>
+	                           </div>
+	                       </div> 
+	                  </div>
+	        </div>
+	        <form action="/question/main" id="searchForm" method="get">
+	            <input type="hidden" name="keyword" id="keyword">
+	            <input type="hidden" name="condition" id="condition">
+	            <input type="hidden" name="pageCnt" id="pageCnt" value=1>
+	        </form>
+	        <div class="table-responsive">
+	            <div class="container mt-5">
+			        <div>
+					    <div id="entryQuestionDiv" th:data-authorities="${#authentication.principal.authorities}">
+					        <h1 style="margin-bottom: 50px; margin-top: 50px; text-align: center">QnA 목록</h1>
+					
+					        <div class="btn-wrapper" style="margin-bottom: 10px;">
+					
+					        </div>
+					        		<a href="/question/questionInsertForm"><button type="button" id="qnaAddBtn" class="btn btn-primary">등록</button></a>
+					        		<div class="clearfix"></div>
+									<table class="table table-hover table-striped">
+										<colgroup>
+											<col width="30%">
+											<col width="40%">
+											<col width="10%">
+											<col width="20%">
+										</colgroup>
+										<thead class="thead-dark">
+											<tr>
+												<th>제목</th>
+												<th>내용</th>
+												<th>작성자</th>
+												<th>작성일시</th>
+											</tr>
+										</thead>
+											<th:block sec:authorize="hasRole('ADMIN')">
+												<tbody th:if="${qnalist != null}" id="qnaListBody">
+											        <tr th:each="list : ${qnalist}" th:data-qestn-no="${list.qestnNo}" th:data-qestn-password="${list.qestnPassword}">
+											            <td>
+											                <span th:text="${list.qestnTitle}"></span>
+											            </td>
+											            <td>
+											                <span th:text="${list.qestnContent}"></span>
+											            </td>
+											            <td><span th:text="${list.userId}"></span></td>
+											            <td><span th:text="${list.qestnDate}"></span></td>
+											        </tr>
+											    </tbody>
+											    <tbody th:unless="${qnalist != null}">
+											        <tr>
+											            <td colspan="4"><h1>조회하신 QnA 목록이 없습니다.</h1></td>
+											        </tr> 
+											    </tbody>
+											</th:block>
+											<th:block sec:authorize="hasRole('USER')">
+											    <tbody th:if="${qnalist != null}" id="qnaListBody">
+											        <tr th:each="list : ${qnalist}" th:data-qestn-no="${list.qestnNo}" th:data-qestn-password="${list.qestnPassword}">
+											            <td>
+											                <span th:if="${list.qestnPassword != null and list.qestnPassword != ''}">비밀글 </span>
+											                <span th:if="${list.qestnPassword == null or list.qestnPassword == ''or
+											                		 #strings.isEmpty(list.qestnPassword)}" th:text="${list.qestnTitle}"></span>
+											            </td>
+											            <td>
+											                <span th:if="${list.qestnPassword != null and list.qestnPassword != '' }" >비밀내용</span>
+											                <span th:if="${list.qestnPassword == null or list.qestnPassword == '' or 
+											                			#strings.isEmpty(list.qestnPassword)}" th:text="${list.qestnContent}"></span>
+											            </td>
+											            <td><span th:text="${list.userId}"></span></td>
+											            <td><span th:text="${list.qestnDate}"></span></td>
+											        </tr>
+											    </tbody>
+											    <tbody th:unless="${qnalist != null}">
+											        <tr>
+											            <td colspan="4"><h1>조회하신 QnA 목록이 없습니다.</h1></td>
+											        </tr> 
+											    </tbody>
+											</th:block>
+									</table>
+<!-- 						    <div class="gridWrapper"> -->
+<!-- 								<div id="grid"></div> -->
+<!-- 							    <div id="pagination" class="tui-pagination"></div> -->
+<!-- 							</div> -->
+					
+					    </div>
+			      </div>
+	        </div>
+			
+	        <nav aria-label="Page navigation example" class="d-flex justify-content-center">
+<!-- 	            <ul class="pagination" id="pagingArea"></ul> -->
+					<div id="pagination">
+							<!-- 맨 처음 페이지로 이동하는 버튼 -->
+						    <span th:if="${pagination.startPage > 1}">
+						        <a th:href="@{'/question/main?page=1'}" th:text="'처음&emsp;'"></a>
+						    </span>
+						
+							<!-- 이전 블록으로 이동하는 버튼 -->
+						    <span th:if="${pagination.isPrev == true}">
+						    	<a th:href="@{'/question/main?page='+${pagination.startPage - 1}}" th:text="'이전'"></a>
+						    </span>
+						
+						    <!-- 시퀀스 보여주는 값을 변경. -->
+						    <span th:each="pageNum : ${#numbers.sequence(pagination.startPage, pagination.endPage)}">
+						        <a class="div2" th:href="@{'/question/main?page='+${pageNum}}" th:text="|&emsp;${pageNum}&emsp;|"></a>
+						    </span>
+							
+						    <!-- 다음 블록으로 이동하는 버튼 -->
+						    <span th:if="${pagination.isNext == true}">
+							<a th:href="@{'/question/main?page='+${pagination.endPage + 1}}" th:text="'다음'"></a>
+						    </span>
+							
+						    <!-- 맨 뒷 페이지로 이동하는 버튼 -->
+						    <span th:if="${pagination.endPage < pagination.totalPageCount}">
+							<a th:href="@{'/question/main?page='+${pagination.totalPageCount}}" th:text="|&emsp;끝|"></a>
+						    </span>
+					</div>
+
+	        </nav>
+	
+	    </div>
+	</div>
+</div>
+</div>
+
+<script th:src="@{/js/app/question/differentQuestion.js}" type="text/javascript"></script>
+<!-- <script th:src="@{/js/app/question/question.js}" type="text/javascript"></script> -->
+
+</body>
+</html>

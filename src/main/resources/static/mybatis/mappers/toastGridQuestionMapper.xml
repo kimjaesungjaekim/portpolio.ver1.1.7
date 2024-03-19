@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="static.mybatis.mappers.toastGridQuestionMapper">
+
+<!--     <select id="read" resultType="com.iraefolio.domain.ReviewEntity"> -->
+<!--         SELECT * FROM TB_REVIEW -->
+<!--         <if test="CONTENT != null and !CONTENT.equals('')"> -->
+<!--             WHERE CONTENT LIKE CONCAT('%', #{CONTENT}, '%') -->
+<!--         </if> -->
+<!--         ORDER BY REVIEW_ID DESC -->
+<!--         LIMIT #{limit} OFFSET #{offset} -->
+<!--     </select> -->
+
+<!--     <select id="readOne" resultType="com.iraefolio.domain.ReviewEntity"> -->
+<!--         SELECT * FROM TB_REVIEW -->
+<!--         WHERE REVIEW_ID = #{REVIEW_ID} -->
+<!--     </select> -->
+
+    <select id="readCnt" resultType="Integer">
+        SELECT COUNT(*)
+        FROM TB_REVIEW
+        <if test="CONTENT != null and !CONTENT.equals('')">
+            WHERE CONTENT LIKE CONCAT('%', #{CONTENT}, '%')
+        </if>
+    </select>
+
+    <insert id="create">
+        INSERT INTO TB_REVIEW(TITLE, CONTENT, CREATE_DT)
+        VALUES (#{TITLE}, #{CONTENT}, current_timestamp)
+    </insert>
+
+    <update id="update">
+        UPDATE TB_REVIEW SET
+            UPDATE_DT = current_timestamp
+        <if test="isUpdated">
+            , CONTENT = #{CONTENT}
+        </if>
+        WHERE REVIEW_ID = #{REVIEW_ID}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM TB_REVIEW
+        WHERE REVIEW_ID = #{REVIEW_ID}
+    </delete>
+
+</mapper>

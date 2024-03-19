@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security5"
+    layout:fragment="content">
+
+<head>
+    <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+    <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <title>QnA</title>
+</head>
+<body>
+<div class="container mt-5">
+	<div class="card">
+	    <div class="card-header">
+	    	<h2>상세 정보</h2>
+	    </div>
+	    <div id="questionDiv" th:data-qestn-no="${questionOne.qestnNo}" 
+	    					th:if="${questionOne !=null}" class="card-body">
+	        <label>제목</label>
+	        <h4 class="card-title" th:text="${questionOne.qestnTitle}"></h4>
+	        <label>작성자</label>
+	        <h4 class="card-writer" th:text="${questionOne.userId}"></h4>
+	       <label>내용</label>
+	        <p class="card-subtitle mb-2 text-muted" th:text="${questionOne.qestnContent}"></p>
+	     	<label>작성일자</label>
+	        <p class="card-text" th:text="${questionOne.qestnDate}"></p>
+	        파일 업로드한 목록
+	        <div th:if="${attachmentFile != null}">
+	            <ul th:each="file : ${attachmentFile}">
+		            <li th:text="${file.atchmnflSn}">첨부파일 순번</li>
+	                <li th:text="${file.atchmnflNm}">파일명</li>
+	                <li th:text="${file.atchmnflIndictMg}">파일크기</li>
+	                <li th:text="${file.atchmnflMimeType}">파일타입</li>
+	                <li th:with="atchmnflNo=${file.atchmnflNo} , atchmnflSn=${file.atchmnflSn}">
+						<a th:href="@{/attachmentFile/download/{atchmnflNo}/{atchmnflSn} (atchmnflNo=${atchmnflNo},
+																atchmnflSn=${atchmnflSn})}" class="btn btn-success">다운받기</a>
+	                </li>
+	            </ul>
+	        </div>
+	        <div th:if="${attachmentFile == null}" >
+	        	<h3>게시글에 첨부한 파일이 존재하지 않습니다.</h3>
+	        </div>
+	        <a th:href="@{/question/questionModifyForm/{qestnNo}(qestnNo=${questionOne.qestnNo})}">
+		        <button type="button" th:if="${#authentication.principal.username == questionOne.userId}" 
+	        							id="questionDetailModifyForm" class="btn btn-warning">수정</button>
+        	</a>
+	        <div sec:authorize="hasRole('ADMIN')">
+	        <button type="button" class="btn btn-danger">삭제</button>
+	        </div>
+	        <button type="button" class="btn btn-secondary" onclick="location.href='/question/main'">목록</button>
+	        
+	    </div>
+	    <div th:if="${questionOne == null}" class="card-body">
+	    	<h1>상세정보를 조회 할 수 없습니다</h1>
+	    </div>
+	    <div class="card-header">
+	    	<h5>답변</h5>
+	    </div>
+	    <div class="card-body" th:if="${questionOne.qestnAnswer != null}">
+		    <label>작성자</label>
+		    <p class="card-text" th:text="${questionOne.userId}"></p>
+		    <label>답변내용</label>
+		    <p class="card-text" th:text="${questionOne.qestnAnswer}"></p>
+		    <label>답변일자</label>
+		    <p class="card-text" th:text="${questionOne.qestnAnswerDate}"></p>
+		    <div sec:authorize="hasRole('ADMIN')">
+		        <input id="questionModifyModalBtn" type="button" class="btn btn-warning" value="수정">
+		    </div>
+		</div>
+		<div class="card-body" th:if="${questionOne.qestnAnswer == null}">
+		    <p class="card-text">아직 답변이 작성되지 않았습니다.</p>
+		    <div sec:authorize="hasRole('ADMIN')">
+		        <h5>답변 작성</h5>
+		        <form id="qnaDetailAnswerForm" method="POST" action="/question/detail/answer">
+		            <div>
+		                <textarea id="answerTextarea" class="form-control" rows="6" placeholder="답변내용을 적어주세요."></textarea>
+		                <input type="submit" class="btn btn-primary" value="등록">
+		            </div>
+		        </form>
+		    </div>
+		</div>
+	</div>
+</div>
+
+<!-- QnA 답변글 수정 모달 -->
+<div class="modal" id="answerModifyModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header bg-warning text-white">
+        <h5 class="modal-title">답변글 수정</h5>
+      </div>
+      <!-- Modal body -->
+      <div id="answerModifyModalForm" class="modal-body">
+        <form id="answerModifyForm" action="/question/detail/answer/modify" method="post">
+          <div class="mb-3">
+            <label for="crqfcNm" class="form-label">답변내용:</label>
+            <textarea class="form-control" id="qestnAnswerModalTextarea" name="qestnAnswer" required></textarea>
+          </div>
+          <div class="text-end">
+            <button type="submit" class="btn btn-primary">등록</button>
+            <button type="button" id="answerModifyModalClose" class="btn btn-danger" data-bs-dismiss="modal">닫기</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>	
+
+<script th:src="@{/js/app/question/questionDetail.js}" type="text/javascript"></script>
+</body>
+</html>

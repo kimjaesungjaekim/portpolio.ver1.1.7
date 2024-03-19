@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security5"
+    layout:fragment="content">
+
+<head>
+	<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+	<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+	
+    <meta charset="UTF-8">
+    <title>QnA</title>
+
+</head>
+<body>
+			<div>
+                 <form action="<c:url value='/FreeBoard/freeList'/>">
+                        <div class="search-wrap clearfix">
+                            <button type="submit" class="btn btn-primary search-btn" style="margin-right: 24%;">검색</button>
+                            <input type="text" name="keyword" class="form-control search-input" th:value="${pageCreate.paging.keyword}"
+                            style="width: 200px; ">
+                            <select class="form-control" id="search-select" name="condition" style="width: 80px; margin-left: 54%">
+                                <option th:value="freeboard_title" th:selected="${pageCreate.paging.condition == 'freeboard_title'}">제목</option>
+								<option th:value="freeboard_content" th:selected="${pageCreate.paging.condition == 'freeboard_content'}">내용</option>
+								<option th:value="freeboard_writer" th:selected="${pageCreate.paging.condition == 'freeboard_writer'}">작성자</option>
+                            </select>
+                        </div>
+                </form> 
+			</div>
+			
+    <table class="table" style="width: 70%; margin: 0 auto;">
+        <thead>
+          <tr>
+	            <th scope="col">작성자</th>
+	            <th scope="col">제목</th>
+	            <th scope="col">내용</th>
+	            <th scope="col">작성일자</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="qna,i:${questionList}" th:data-qestn-no="${qna.qestnNo}">
+	       	   <td th:text="${qna.userId}"></td>
+	           <td th:text="${qna.qestnTitle}"></td>
+	           <td th:text="${qna.qestnContent}"></td>
+	           <td th:text="${qna.qestnDate}"></td>
+          </tr>
+          
+        </tbody>
+      </table>
+
+    <!-- 글작성 -->
+    <div class="newsWrite">
+        <button type="button" class="btn btn-primary whyBtn">글작성</button>
+      </div>
+
+      <!-- 페이징 -->
+	<div class="paging">
+			<form name="pageForm" th:action="@{/question/main}" method="get">
+			    <div class="text-center clearfix">
+			       <ul class="pagination" id="pagination">
+					    <li class="page-item" th:if="${pageCreate.prev}">
+					        <a class="page-link" href="#" th:data-pageNum="${pageCreate.beginPage-1}">Prev</a>
+					    </li>
+					    
+					    <li th:each="num : ${#numbers.sequence(pageCreate.beginPage, pageCreate.endPage)}"
+					        th:class="${pageCreate.paging.pageNum == num ? 'page-item active' : 'page-item'}">
+					        <a class="page-link" href="#" th:data-pageNum="${num}" th:text="${num}"></a>
+					    </li>
+					    
+					    <li class="page-item" th:if="${pageCreate.next}">
+					        <a class="page-link" href="#" th:data-pageNum="${pageCreate.endPage+1}">Next</a>
+					    </li>
+					</ul>
+			
+			        <!-- 페이지 관련 버튼을 클릭 시 같이 숨겨서 보낼 값 -->
+			        <input type="hidden" name="pageNum" th:value="${pageCreate.paging.pageNum}">
+			        <input type="hidden" name="countPerPage" th:value="${pageCreate.paging.countPerPage}">
+			        <input type="hidden" name="keyword" th:value="${pageCreate.paging.keyword}">
+			        <input type="hidden" name="condition" th:value="${pageCreate.paging.condition}">
+			    </div>
+			</form>
+	</div>
+
+<!-- <script th:src="@{/js/app/question/differentQuestion.js}" type="text/javascript"></script> -->
+<!-- <script th:src="@{/js/app/question/question.js}" type="text/javascript"></script> -->
+
+</body>
+</html>

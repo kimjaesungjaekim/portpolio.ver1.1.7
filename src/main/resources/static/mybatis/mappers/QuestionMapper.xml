@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno.portpolio.question.mapper.QuestionMapper">
+	
+	<sql id="questionFrag">
+		<where>
+	    	<if test="condition == 'userId'">
+				WHERE USER_ID LIKE CONCAT('%',#{keyword},'%')
+			</if>
+			<if test="condition == 'qestnTitle'">
+				WHERE QESTN_TITLE LIKE CONCAT('%',#{keyword},'%')
+			</if>
+			<if test="condition == 'freeboard_writer'">
+				WHERE QESTN_CONTENT LIKE CONCAT('%',#{keyword},'%')
+			</if>
+	    </where>
+	</sql>
+	
+	<select id="getCount" resultType="int">
+		SELECT COUNT(*) AS listCnt
+		FROM QUESTION
+	</select>
+	
+	<select id="getListPage" parameterType="com.inno.portpolio.paging.vo.Pagination" resultType="com.inno.portpolio.question.vo.QuestionVO">
+	    SELECT * 
+	    FROM QUESTION 
+	    ORDER BY QESTN_DATE DESC 
+	    LIMIT #{rowCount}
+	    OFFSET #{offset}
+</select>
+	
+	
+	<!-- QnA 목록 페이징 레코드수 조회 -->
+	<select id="selectQuestionTotalRecord" resultType="int">
+			SELECT COUNT(*)
+			FROM(
+				SELECT  QESTN_NO
+				       ,USER_ID
+				       ,QESTN_CONTENT
+				       ,QESTN_TITLE
+				       ,QESTN_PASSWORD
+				       ,QESTN_ANSWER
+				       ,QESTN_DATE
+				       ,QESTN_ANSWER_DATE
+				       ,ATCHMNFL_NO
+				
+				FROM   QUESTION
+				ORDER BY QESTN_DATE DESC
+				<include refid="questionFrag" />
+			) B
+	</select>
+	
+	
+	<!-- QnA 목록 페이징 -->
+	<select id="selectQuestionList" resultType="com.inno.portpolio.question.vo.QuestionVO">
+		SELECT   QESTN_NO
+			    ,USER_ID
+			    ,QESTN_CONTENT
+			    ,QESTN_TITLE
+			    ,QESTN_PASSWORD
+			    ,QESTN_ANSWER
+			    ,QESTN_DATE
+			    ,QESTN_ANSWER_DATE
+			    ,ATCHMNFL_NO
+			    
+		FROM QUESTION
+		<include refid="questionFrag" />
+		
+		ORDER BY QESTN_DATE DESC
+		LIMIT #{pageCnt} ,  #{countPerPage}
+	</select>
+	
+	
+	<sql id="questionDifferentFrag">
+		<where>
+	    	<if test="simpleCondition neq null and @org.apache.commons.lang3.StringUtils@isNotBlank(simpleCondition.searchWord)">
+	    		<choose>
+	    			<when test="simpleCondition.searchType eq 'qestnTitle'">
+	    				INSTR(QESTN_TITLE, #{simpleCondition.searchWord}) > 0
+	    			</when>
+	    			<when test="simpleCondition.searchType eq 'qestnContent'">
+	    				INSTR(QESTN_CONTENT, #{simpleCondition.searchWord}) > 0
+	    			</when>
+	    			<when test="simpleCondition.searchType eq 'userId'">
+	    				INSTR(USER_ID, #{simpleCondition.searchWord}) > 0
+	    			</when>
+	    			<otherwise>
+	    				INSTR(QESTN_TITLE, #{simpleCondition.searchWord}) > 0
+	    				OR
+	    				INSTR(QESTN_CONTENT, #{simpleCondition.searchWord}) > 0
+	    				OR
+	    				INSTR(USER_ID, #{simpleCondition.searchWord}) > 0
+	    			</otherwise>
+	    		</choose>
+	    	</if>
+	    </where>
+	</sql>
+	
+	
+	
+	<!-- 다른! QnA 목록 페이징 레코드수 조회 -->
+	<select id="selectDifferentQuestionTotalRecord" parameterType="com.inno.portpolio.paging.vo.PaginationInfo" resultType="int">
+			SELECT COUNT(*)
+			FROM(
+				SELECT   QESTN_NO
+					    ,USER_ID
+					    ,QESTN_CONTENT
+					    ,QESTN_TITLE
+					    ,QESTN_PASSWORD
+					    ,QESTN_ANSWER
+					    ,QESTN_DATE
+					    ,QESTN_ANSWER_DATE
+					    ,ATCHMNFL_NO
+					    
+				FROM QUESTION
+				ORDER BY QESTN_DATE DESC
+				<include refid="questionDifferentFrag" />
+				LIMIT #{startRow} ,  #{endRow}
+			) A
+			
+	</select>
+	
+	
+	
+	<!-- 다른! QnA 목록 페이징 -->
+	<select id="selectDifferentQuestionList" parameterType="com.inno.portpolio.paging.vo.PaginationInfo" resultType="com.inno.portpolio.question.vo.QuestionVO">
+		SELECT   QESTN_NO
+			    ,USER_ID
+			    ,QESTN_CONTENT
+			    ,QESTN_TITLE
+			    ,QESTN_PASSWORD
+			    ,QESTN_ANSWER
+			    ,QESTN_DATE
+			    ,QESTN_ANSWER_DATE
+			    ,ATCHMNFL_NO
+			    
+		FROM QUESTION
+		ORDER BY QESTN_DATE DESC
+		<include refid="questionDifferentFrag" />
+		LIMIT #{pageSize} OFFSET #{startRow}
+	</select>
+	
+	
+	
+	<!-- QnA 질문사항 등록 -->
+	<insert id="insertQuestion" parameterType="com.inno.portpolio.question.vo.QuestionVO">
+	<selectKey keyProperty="qestnNo" keyColumn="QESTN_NO" order="BEFORE" resultType="String">
+		SELECT CONCAT(DATE_FORMAT(NOW(), '%Y%m%d'), LPAD(IFNULL(MAX(SUBSTR(QESTN_NO,10)),0)+1,4,'0'))
+		FROM QUESTION
+		WHERE USER_ID = #{userId,jdbcType=VARCHAR}
+	</selectKey>
+	
+		INSERT INTO QUESTION (    QESTN_NO
+								 ,USER_ID
+								 ,QESTN_CONTENT
+								 ,QESTN_TITLE
+								 ,QESTN_PASSWORD
+								 ,QESTN_DATE
+								 ,QESTN_ANSWER_DATE
+								 ,ATCHMNFL_NO
+								 
+						)VALUES(  #{qestnNo,jdbcType=VARCHAR}
+								 ,#{userId,jdbcType=VARCHAR}
+								 ,#{qestnContent,jdbcType=VARCHAR}
+								 ,#{qestnTitle,jdbcType=VARCHAR}
+								 ,#{qestnPassword,jdbcType=VARCHAR}
+								 , NOW()
+								 ,#{qestnAnswerDate,jdbcType=VARCHAR}
+								 ,#{atchmnflNo,jdbcType=VARCHAR}
+		)				
+	</insert>
+	
+	
+	<select id="selectQuestionOne" parameterType="String" resultType="com.inno.portpolio.question.vo.QuestionVO">
+		SELECT  Q.QESTN_NO,
+	            Q.USER_ID,
+	            Q.QESTN_CONTENT,
+	            Q.QESTN_TITLE,
+	            Q.QESTN_PASSWORD,
+	            Q.QESTN_ANSWER,
+	            Q.QESTN_DATE,
+	            Q.QESTN_ANSWER_DATE,
+	            Q.ATCHMNFL_NO
+                                                       
+		FROM    QUESTION Q
+		
+		WHERE   QESTN_NO = #{qestnNo,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateQuestionAnswer" parameterType="com.inno.portpolio.question.vo.QuestionVO">
+		UPDATE QUESTION
+		
+		SET  QESTN_ANSWER_DATE = NOW()
+		    ,QESTN_ANSWER = #{qestnAnswer,jdbcType=VARCHAR}
+		    
+		WHERE QESTN_NO = #{qestnNo,jdbcType=VARCHAR}    
+	</update>
+</mapper>

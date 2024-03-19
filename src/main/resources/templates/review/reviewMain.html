@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}"
+    xmlns:="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security5"
+    layout:fragment="content">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CODE_REVIEW</title>
+</head>
+<body>
+<div class="container-fluid row-lg-30">
+	<!-- Begin Page Content -->
+	<div class="container-fluid">
+		<!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">CODE_REVIEW</h1>
+        </div>
+        
+	    <div class="card card-body">
+	        <div class="sub_top_wrap">
+	
+	            <!-- selectbox -->
+	            <div class="form-group">
+	                <label for="searchType">검색 유형</label>
+	                <select class="form-control bg-light border-0 small" id="searchType">
+	                    <option value="" selected>전체</option>
+	                    <option value="stdntNm">이름</option>
+	                    <option value="stdntNo">학번</option>
+	                </select>
+	            </div>
+	
+	            <!-- search -->
+	            <div id="searchUI" class="form-inline ml-md-3 my-2 my-md-0">
+	                <div class="input-group">
+	                    <input type="text" name="searchWord" class="form-control" placeholder="검색어 입력" aria-label="Search" aria-describedby="searchBtn">
+	                    <div class="input-group-append">
+	                        <button class="btn btn-primary" id="searchBtn" type="button">
+	                            <i class="fas fa-search"></i>
+	                        </button>
+	                    </div>
+	                </div>
+	            </div>
+	
+	        </div>
+	        <form action="" id="searchForm">
+	            <input type="hidden" name="searchType">
+	            <input type="hidden" name="searchWord">
+	            <input type="hidden" name="page">
+	        </form>
+	        <div class="table-responsive">
+	            <table class="table table-striped mt-4" id="dataTable">
+	                <thead>
+	                    <tr>
+	                        <th>번호</th>
+	                        <th>학번</th>
+	                        <th>이름</th>
+	                        <th>상담요청일</th>
+	                        <th>상담완료일</th>
+	                    </tr>
+	                </thead>
+	                <tbody id="listBody"></tbody>
+	            </table>
+	        </div>
+	
+	        <nav aria-label="Page navigation example" class="d-flex justify-content-center">
+	            <ul class="pagination" id="pagingArea"></ul>
+	        </nav>
+	
+	    </div>
+	</div>
+</div>
+</body>
+</html>

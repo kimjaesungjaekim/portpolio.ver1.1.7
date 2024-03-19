@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno.portpolio.information.mapper.InformationMapper">	
+
+	<select id="selectSchoolInformation" resultType="com.inno.portpolio.information.vo.AcademicCareerVO">
+		SELECT   S.INFO_NO
+		        ,S.ACDMCR_NO
+		        ,S.ACDMCR_NM
+		        ,S.ACDMCR_BEGIN_DATE
+		        ,S.ACDMCR_END_DATE
+		        ,S.ACDMCR_GRADUATE
+		        ,S.ACDMCR_SCORE
+		        ,S.ACDMCR_SE
+
+		FROM    ACADEMIC_CAREER S
+		                   
+		WHERE   S.INFO_NO = 'SC'
+	</select>
+	<select id="selectCareerInformation" resultType="com.inno.portpolio.information.vo.CareerVO">
+		SELECT   C.INFO_NO
+		        ,C.CAREER_NO
+                ,C.CAREER_NM
+                ,C.CAREER_SPOT
+                ,C.CAREER_BEGIN_DATE
+                ,C.CAREER_END_DATE
+
+		FROM    CAREER C
+		                   
+		WHERE   C.INFO_NO = 'CA'
+	</select>
+	<select id="selectCertificateInformation" resultType="com.inno.portpolio.information.vo.CertificateOfQualificationVO">
+		SELECT    F.INFO_NO
+		         ,F.CRQFC_NO
+	             ,F.CRQFC_NM
+	             ,F.CRQFC_CODE
+	             ,F.CRQFC_AGENCY
+	             ,F.CRQFC_DATE
+
+		FROM    CERTIFICATE_OF_QUALIFICATION F
+		                   
+		WHERE   F.INFO_NO = 'CE'
+	</select>
+	<select id="selectSkilInformation" resultType="com.inno.portpolio.information.vo.SkilVO">
+		SELECT   K.INFO_NO
+		        ,K.SKIL_NO
+                ,K.SKIL_NM
+                ,K.SKIL_CONTENT
+                ,K.SKIL_NICE
+
+		FROM    SKIL K
+		                   
+		WHERE   K.INFO_NO = 'SK'
+	</select>
+	
+	<update id="updateProfileInformation" parameterType="com.inno.portpolio.user.vo.UserVO">
+		UPDATE USER
+		
+		SET  USER_NM = #{userNm,jdbcType=VARCHAR}
+		    ,USER_TEL = #{userTel,jdbcType=VARCHAR}
+		    ,USER_EMAIL = #{userEmail,jdbcType=VARCHAR}
+		    ,USER_INTRODUCE = #{userIntroduce,jdbcType=VARCHAR}
+		
+		WHERE USER_ID = #{userId,jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="insertCareer" parameterType="com.inno.portpolio.information.vo.CareerVO">
+		<selectKey keyProperty="careerNo" keyColumn="CAREER_NO" order="BEFORE" resultType="String">
+			SELECT CONCAT(#{infoNo,jdbcType=VARCHAR}, LPAD(IFNULL(MAX(SUBSTR(CAREER_NO,3)),0)+1,3,'0'))
+			FROM CAREER
+			WHERE INFO_NO = #{infoNo,jdbcType=VARCHAR}
+		</selectKey>
+		INSERT INTO CAREER (  CAREER_NO
+							 ,INFO_NO
+							 ,CAREER_NM
+							 ,CAREER_SPOT
+							 ,CAREER_BEGIN_DATE
+							 ,CAREER_END_DATE
+							 
+					)VALUES(  #{careerNo,jdbcType=VARCHAR}
+							 ,#{infoNo,jdbcType=VARCHAR}
+							 ,#{careerNm,jdbcType=VARCHAR}
+							 ,#{careerSpot,jdbcType=VARCHAR}
+							 ,#{careerBeginDate,jdbcType=VARCHAR}
+							 ,#{careerEndDate,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<delete id="deleteCareer" parameterType="com.inno.portpolio.information.vo.CareerVO">
+		 DELETE FROM CAREER
+		 
+		  WHERE INFO_NO = #{infoNo,jdbcType=VARCHAR}
+		  
+		    AND CAREER_NO = #{careerNo,jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="insertSchool" parameterType="com.inno.portpolio.information.vo.AcademicCareerVO">
+		<selectKey keyProperty="acdmcrNo" keyColumn="ACDMCR_NO" order="BEFORE" resultType="String">
+			SELECT CONCAT(#{infoNo,jdbcType=VARCHAR}, LPAD(IFNULL(MAX(SUBSTR(ACDMCR_NO,3)),0)+1,3,'0'))
+			FROM ACADEMIC_CAREER
+			WHERE INFO_NO = #{infoNo,jdbcType=VARCHAR}
+		</selectKey>
+		INSERT INTO ACADEMIC_CAREER (     ACDMCR_NO
+										 ,INFO_NO
+										 ,ACDMCR_NM
+										 ,ACDMCR_BEGIN_DATE
+										 ,ACDMCR_END_DATE
+										 ,ACDMCR_GRADUATE
+										 ,ACDMCR_SCORE
+										 ,ACDMCR_SE
+								)VALUES(  #{acdmcrNo,jdbcType=VARCHAR}
+										 ,#{infoNo,jdbcType=VARCHAR}
+										 ,#{acdmcrNm,jdbcType=VARCHAR}
+										 ,#{acdmcrBeginDate,jdbcType=VARCHAR}
+										 ,#{acdmcrEndDate,jdbcType=VARCHAR}
+										 ,#{acdmcrGraduate,jdbcType=VARCHAR}
+										 ,#{acdmcrScore,jdbcType=VARCHAR}
+										 ,#{acdmcrSe,jdbcType=VARCHAR}
+		)			
+	</insert>
+	
+	<delete id="deleteSchool" parameterType="com.inno.portpolio.information.vo.AcademicCareerVO">
+		 DELETE FROM ACADEMIC_CAREER
+		 
+		  WHERE INFO_NO = #{infoNo,jdbcType=VARCHAR}
+		  
+		    AND ACDMCR_NO = #{acdmcrNo,jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="insertCertificate" parameterType="com.inno.portpolio.information.vo.CertificateOfQualificationVO">
+		<selectKey keyProperty="crqfcNo" keyColumn="CRQFC_NO" order="BEFORE" resultType="String">
+			SELECT CONCAT(#{infoNo,jdbcType=VARCHAR}, LPAD(IFNULL(MAX(SUBSTR(CRQFC_NO,3)),0)+1,3,'0'))
+			FROM CERTIFICATE_OF_QUALIFICATION
+			WHERE INFO_NO = #{infoNo,jdbcType=VARCHAR}
+		</selectKey>
+		INSERT INTO CERTIFICATE_OF_QUALIFICATION (    CRQFC_NO
+													 ,INFO_NO
+													 ,CRQFC_NM
+													 ,CRQFC_CODE
+													 ,CRQFC_AGENCY
+													 ,CRQFC_DATE
+													 
+											)VALUES(  #{crqfcNo,jdbcType=VARCHAR}
+													 ,#{infoNo,jdbcType=VARCHAR}
+													 ,#{crqfcNm,jdbcType=VARCHAR}
+													 ,#{crqfcCode,jdbcType=VARCHAR}
+													 ,#{crqfcAgency,jdbcType=VARCHAR}
+													 ,#{crqfcDate,jdbcType=VARCHAR}
+		)				
+	</insert>
+	
+	
+	<delete id="deleteCertificate" parameterType="com.inno.portpolio.information.vo.CertificateOfQualificationVO">
+		 DELETE FROM CERTIFICATE_OF_QUALIFICATION
+		 
+		  WHERE INFO_NO = #{infoNo,jdbcType=VARCHAR}
+		  
+		    AND CRQFC_NO = #{crqfcNo,jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="insertSkil" parameterType="com.inno.portpolio.information.vo.SkilVO">
+		<selectKey keyProperty="skilNo" keyColumn="SKIL_NO" order="BEFORE" resultType="String">
+			SELECT CONCAT(#{infoNo,jdbcType=VARCHAR}, LPAD(IFNULL(MAX(SUBSTR(SKIL_NO,3)),0)+1,3,'0'))
+			FROM SKIL
+			WHERE INFO_NO = #{infoNo,jdbcType=VARCHAR}
+		</selectKey>
+		INSERT INTO SKIL ( SKIL_NO
+								 ,INFO_NO
+								 ,SKIL_NM
+								 ,SKIL_CONTENT
+								 ,SKIL_NICE
+								 
+						)VALUES(  #{skilNo,jdbcType=VARCHAR}
+								 ,#{infoNo,jdbcType=VARCHAR}
+								 ,#{skilNm,jdbcType=VARCHAR}
+								 ,#{skilContent,jdbcType=VARCHAR}
+								 ,#{skilNice,jdbcType=VARCHAR}
+		)				
+	</insert>
+	
+	<delete id="deleteSkil" parameterType="com.inno.portpolio.information.vo.SkilVO">
+		 DELETE FROM SKIL
+		 
+		  WHERE INFO_NO = #{infoNo,jdbcType=VARCHAR}
+		  
+		    AND SKIL_NO = #{skilNo,jdbcType=VARCHAR}
+	</delete>
+				 
+</mapper>

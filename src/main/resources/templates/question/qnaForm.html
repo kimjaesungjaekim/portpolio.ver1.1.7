@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security5"
+    layout:fragment="content">
+
+<head>
+    <meta charset="UTF-8">
+	<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+    <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <title>QnA 작성</title>
+    
+<style>
+.drop {
+  width: 58vw;
+  height: 40vh;
+   
+  margin: .6rem;
+  overflow: auto;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 5px;
+  border: 4px dashed #ddd;
+  user-select: none;
+  transition: 0.4s;
+ } 
+.dropBox.active {
+  background: #ddd;
+}
+
+.dropBox h1 {
+  font-size: 1.8rem;
+
+}
+</style>
+</head>
+<body>
+	<div>
+	</div>
+	
+	<div th:if="${questionOne == null and attachmentFile == null }" class="container mt-5">
+	    <h2>QnA 작성</h2>
+	    <form id="qnaAddForm" action="/question/add" method="POST" enctype="multipart/form-data">
+	        <!-- 제목 입력 -->
+	        <div class="form-group">
+	            <label for="title">제목</label>
+	            <input type="text" class="form-control" id="qestnTitle" name="qestnTitle" placeholder="제목을 입력하세요">
+	        </div>
+	        <div class="form-group">
+	            <label for="title">작성자</label>
+	            <sec:authorize access="isAuthenticated()">
+					<sec:authentication property="principal.username" var="userId"/>
+		            <input type="text" class="form-control" id="userId" name="userId" th:value="${#authentication.name}" disabled />
+				</sec:authorize>
+	        </div>
+	        <div id="passwordDiv" class="form-group">
+	            <label for="title">비밀번호</label>
+	            <button id="passwordMarkBtn" type="button" class="btn btn-warning btn-icon-split">
+                    <span class="icon text-white-50">비밀번호 표시
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </span>
+                </button>
+	            <input id="qestnPassword" type="password" class="form-control" name="qestnPassword" placeholder="비밀글로 만들고 싶다면 입력하세요.">
+	        </div>
+	        <!-- 내용 입력 -->
+	        <div class="form-group">
+	            <label for="content">내용</label>
+	            <textarea class="form-control" id="qestnContent" name="qestnContent" rows="10" placeholder="내용을 입력하세요"></textarea>
+	        </div>
+<!-- 	        <div class="form-group"> -->
+<!-- 	            <label for="title">파일선택</label> -->
+<!-- 	            <input type="file" class="form-control" id="fileList" name="fileList" multiple="multiple"> -->
+<!-- 	        </div> -->
+	        
+		  	<div class="drop">
+			  <label class="label" id="label" for="input">
+			    <div class="inner" id="inner">드래그하거나 클릭해서 업로드</div>
+			    </label>
+			    <input id="input" class="input" accept="image/*" type="file" name="fileList" hidden="true" multiple="multiple">
+			    <p class="preview-title">preview</p>
+			    <div class="preview" id="preview"></div>
+			</div>
+
+	        <!-- 버튼들 -->
+	        <button type="submit" class="btn btn-primary">등록</button>
+	        <a href="/question/main" class="btn btn-secondary">목록</a>
+	    </form>
+	</div>
+	
+	<!-- 수정폼 -->
+	<div th:if="${questionOne != null and attachmentFile != null}" class="container mt-5">
+	    <h2>QnA 글 수정</h2>
+	    <form id="qnaAddForm" action="/question/add" method="POST" enctype="multipart/form-data">
+	        <!-- 제목 입력 -->
+	        <div class="form-group">
+	            <label for="title">제목</label>
+	            <input type="text" class="form-control" id="qestnTitle" name="qestnTitle" th:value="${questionOne.qestnTitle}" placeholder="제목을 입력하세요.">
+	        </div>
+	        <div class="form-group">
+	            <label for="title">작성자</label>
+	            <sec:authorize access="isAuthenticated()">
+					<sec:authentication property="principal.username" var="userId"/>
+		            <input type="text" class="form-control" id="userId" name="userId" th:value="${#authentication.name}" disabled />
+				</sec:authorize>
+	        </div>
+	        <div id="passwordDiv" class="form-group">
+	            <label for="title">비밀번호</label>
+	            <button id="passwordMarkBtn" type="button" class="btn btn-warning btn-icon-split">
+                    <span class="icon text-white-50">비밀번호 표시
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </span>
+                </button>
+	            <input id="qestnPassword" type="text" class="form-control" name="qestnPassword" th:value="${questionOne.qestnPassword}" placeholder="비밀글로 만들고 싶다면 입력하세요.">
+	        </div>
+	        <!-- 내용 입력 -->
+	        <div class="form-group">
+	            <label for="content">내용</label>
+	            <textarea class="form-control" id="qestnContent" name="qestnContent" rows="10" placeholder="내용을 입력하세요" th:text="${questionOne.qestnContent}"></textarea>
+	        </div>
+<!-- 	        <div class="form-group"> -->
+<!-- 	            <label for="title">파일선택</label> -->
+<!-- 	            <input type="file" class="form-control" id="fileList" name="fileList" multiple="multiple"> -->
+<!-- 	        </div> -->
+	        
+		  	<div class="drop">
+			  <label class="label" id="label" for="input">
+			    <div class="inner" id="inner">드래그하거나 클릭해서 업로드</div>
+			    </label>
+			    <input id="input" class="input" accept="image/*" type="file" name="fileList" hidden="true" multiple="multiple">
+			    <p class="preview-title">preview</p>
+			    <div class="preview" id="preview">
+			    	<div th:if="${attachmentFile != null}">
+			            <ul th:each="file : ${attachmentFile}">
+				            <li th:text="${file.atchmnflSn}">첨부파일 순번</li>
+			                <li th:text="${file.atchmnflNm}">파일명</li>
+			                <li th:text="${file.atchmnflIndictMg}">파일크기</li>
+			                <li th:text="${file.atchmnflMimeType}">파일타입</li>
+			                <li th:with="atchmnflNo=${file.atchmnflNo} , atchmnflSn=${file.atchmnflSn},atchmnflStreNm=${file.atchmnflStreNm}">
+								<a th:href="@{/attachmentFile/delete/{atchmnflNo}/{atchmnflSn}/{atchmnflStreNm}
+														(atchmnflNo=${atchmnflNo},atchmnflSn=${atchmnflSn},atchmnflStreNm=${atchmnflStreNm})}" class="btn btn-danger">삭제</a>
+			                </li>
+			            </ul>
+	        		</div>
+			    </div>
+			</div>
+
+	        <!-- 버튼들 -->
+	        <button type="button" class="btn btn-primary">등록</button>
+	        <a href="/question/main" class="btn btn-secondary">목록</a>
+	    </form>
+	</div>
+	
+	<script th:src="@{/js/app/question/questionForm.js}" type="text/javascript"></script>
+</body>
+</html>
