@@ -56,11 +56,10 @@
 	
 	<delete id="deleteAttachmentFile" parameterType="com.inno.portpolio.common.file.vo.AttachmentFileVO">
 		
-		DELETE ATTACHMENT_FILE
+		DELETE FROM ATTACHMENT_FILE
 		
 		WHERE ATCHMNFL_NO = #{atchmnflNo,jdbcType=VARCHAR}
 		AND ATCHMNFL_SN = #{atchmnflSn,jdbcType=INTEGER}
-		AND ATCHNNFL_STRE_NM = #{atchmnflStreNm,jdbcType=VARCHAR}
 	</delete>
 	
 	<select id="selectAttachmentFile" parameterType="String" resultType="com.inno.portpolio.common.file.vo.AttachmentFileVO">

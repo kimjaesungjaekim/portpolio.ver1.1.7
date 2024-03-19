@@ -15,6 +15,7 @@ import com.inno.portpolio.common.file.vo.AttachmentFileVO;
 *    수정일            수정자               수정내용
 * ------------     --------    ----------------------
 * 2024.03.13.        김재성       최초 작성
+* 2024.03.19.        김재성       게시글 수정 파일 수정
 * Copyright (c) 2024 by INNOVATION-T All right reserved
 * </pre>
 */
@@ -61,4 +62,5 @@ public interface AttachmentFileMapper {
 	 * @return
 	 */
 	public int updateAttachmentFile(AttachmentFileVO attachmentFile);
+	
 }

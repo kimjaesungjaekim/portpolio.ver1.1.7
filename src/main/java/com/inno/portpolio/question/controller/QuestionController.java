@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Update;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.inno.portpolio.common.enumpkg.ServiceResult;
 import com.inno.portpolio.common.file.mapper.AttachmentFileMapper;
@@ -134,6 +136,7 @@ public class QuestionController {
 				script = "<script>alert('QnA 등록 실패! 다시 작성해주세요.');</script>";
 				viewName = "redirect:/question/questionInsertForm";
 			}
+			
 			response.getWriter().write(script);
 			
 		} catch (IOException e) {
@@ -216,6 +219,53 @@ public class QuestionController {
 		
 		return "/question/qnaForm";
 	}
+	
+	@PostMapping(value="/modify",consumes = "multipart/form-data")
+	@ResponseBody
+	public HashMap<String, Object> questionModify(
+			 QuestionVO question  // ** formData를 받을때는 @RequestBody X -> raw _JSON 받을대
+		) throws IOException{
+		
+		log.info("QnA 수정 폼에서 들어온 question 데이터 체크 : {}",question);
+		log.info("QnA question 내   files 데이터 체크 : {}",question.getFileList());
+		
+		ServiceResult result;
+    	HashMap<String, Object> map = new HashMap<String, Object>();
+    	
+    	result = questionService.modifyQuestion(question);
+		
+		if(result.equals(ServiceResult.OK)) {
+			map.put("result", result);
+			map.put("message", "파일 수정 성공!");
+		}else {
+			map.put("result", result);
+			map.put("message", "파일 수정 실패!");
+		}
+    	
+    	return map;
+	}
+	
+	@GetMapping("/remove/{qestnNo}")
+	@ResponseBody
+	public HashMap<String, Object> questionRemove(
+			
+			@PathVariable("qestnNo") String qestnNo
+		){
+		
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		
+		ServiceResult result = questionService.removeQuestion(qestnNo);
+		
+		if(result.equals(ServiceResult.OK)) {
+			map.put("result", result);
+			map.put("message", "QnA 게시글 삭제 성공");
+		}else {
+			map.put("result", result);
+			map.put("message", "QnA 게시글 삭제 실패!");
+		}
+		
+		return map;
+	};
 	
 	
 }

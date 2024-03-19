@@ -62,13 +62,6 @@ public interface QuestionService {
 	public ServiceResult modifyQuestion(QuestionVO question);
 	
 	/**
-	 * 질문사항 삭제
-	 * @param question
-	 * @return
-	 */
-	public ServiceResult removeQuestion(QuestionVO question);
-	
-	/**
 	 * 질문사항 등록
 	 * @param question
 	 * @return
@@ -82,5 +75,12 @@ public interface QuestionService {
 	 * @return
 	 */
 	public ServiceResult modifyQuestionAnswer(QuestionVO question);
+
+	/**
+	 * 질문사항 삭제
+	 * @param qestnNo
+	 * @return
+	 */
+	public ServiceResult removeQuestion(String qestnNo);
 	
 }

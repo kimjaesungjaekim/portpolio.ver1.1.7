@@ -2,6 +2,7 @@ package com.inno.portpolio.question.service.Impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 *    수정일            수정자               수정내용
 * ------------     --------    ----------------------
 * 2024.03.11.        김재성       최초작성
+* 2024.03.19.        김재성       게시글 수정 파일 수정
 * Copyright (c) 2024 by INNOVATION-T All right reserved
 * </pre>
 */
@@ -176,17 +178,89 @@ public class QuestionServiceImpl implements QuestionService {
 		QuestionVO questionOne = questionMapper.selectQuestionOne(qestnNo);
 		return questionOne;
 	}
-
+	
+	
 	@Override
+	@Transactional
 	public ServiceResult modifyQuestion(QuestionVO question) {
-		ServiceResult res =null;
-		return res ;
-	}
+		ServiceResult res = null;
+	    
+	    log.info(" 서비스 임플 파일 객체 정보 확인 : {}", question);
+	    
+	    String commonAtchmnflNo = null; 
 
-	@Override
-	public ServiceResult removeQuestion(QuestionVO question) {
-		ServiceResult res =null;
-		return res ;
+	    List<MultipartFile> rawMultipartFile = question.getFileList();
+	    
+	    log.info("QnA 수정에서 rawMultipartFile 유무 체크 : {}", rawMultipartFile.get(0).getOriginalFilename());
+	    
+	    // 파일 유무 확인
+	    if (!rawMultipartFile.isEmpty() && rawMultipartFile !=null && rawMultipartFile.size() >= 1 ) {
+	    	
+	    	try {
+	    		
+	    		boolean fileExistsInDB = false;
+	    		
+	    		
+	            for (int i = 0; i < rawMultipartFile.size(); i++) {
+	                MultipartFile atch = rawMultipartFile.get(i);
+	                
+	                List<AttachmentFileVO> DBAttachmentFile = attachmentFileService.selectAttachmentFile(question.getAtchmnflNo());
+	                
+	                log.info("QnA 게시판 수정 시 파일 첨부 개별 정보 : {}", atch);
+
+	                AttachmentFileVO atchmnfl = new AttachmentFileVO(atch); 
+	                
+	                fileExistsInDB=true; // 초기화 해서 계속 false 값 유지
+	                
+	                for(int j =0; j < DBAttachmentFile.size(); j++) {
+	                	if(! atch.getOriginalFilename().equals(DBAttachmentFile.get(j).getAtchmnflNm())) {
+	                		fileExistsInDB =false;
+	                		
+	                		break;  // 존재 할때
+	                	}
+	                }
+	                
+	                if(!fileExistsInDB) {
+	                	atchmnfl.setMultipartFile(atch);
+	                	atchmnfl.setAtchmnflStrePath(saveFolder.getCanonicalPath());
+	                	
+	                	atchmnfl.setAtchmnflSn(question.getFileList().size()+1);
+	                	
+	                	log.info("atchmnfl  파일 첨부 개별 정보 : {}", atchmnfl);
+	                	
+	                	if (DBAttachmentFile.size() == 0) {
+	                		
+	                		attachmentFileService.firstCreateAttachmentFile(atchmnfl);
+	                		commonAtchmnflNo = atchmnfl.getAtchmnflNo(); // 첫 번째 파일의 atchmnflNo 저장
+	                		
+	                		question.setAtchmnflNo(commonAtchmnflNo);;
+	                		atchmnfl.saveTo(saveFolder);
+	                		
+	                	} else {
+//	                		int maxSn = DBAttachmentFile.stream().mapToInt(AttachmentFileVO::getAtchmnflSn).max().orElse(0);
+	                		commonAtchmnflNo = question.getAtchmnflNo();
+	                		atchmnfl.setAtchmnflNo(commonAtchmnflNo);
+	                		atchmnfl.setAtchmnflSn(DBAttachmentFile.size() + 1);
+	                		attachmentFileService.afterCreateAttachmentFile(atchmnfl);
+	                		
+	                		atchmnfl.saveTo(saveFolder);
+	                	}
+	                }
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    
+	    int cnt = questionMapper.updateQuestion(question);
+	    
+		if(cnt > 0) {
+			res = ServiceResult.OK;
+		}else {
+			res = ServiceResult.FAIL;
+		}
+	    
+	    return res;
 	}
 
 	@Override
@@ -203,7 +277,50 @@ public class QuestionServiceImpl implements QuestionService {
 		return res;
 	}
 
-	
+	@Override
+	public ServiceResult removeQuestion(String qestnNo) {
+		
+		ServiceResult res =null;
+		QuestionVO question = questionMapper.selectQuestionOne(qestnNo);
+		List<AttachmentFileVO> fileList = attachmentFileService.selectAttachmentFile(question.getAtchmnflNo());
+		
+		AttachmentFileVO attachmentFile = new AttachmentFileVO();
+		
+		
+		for(int i =0; i < fileList.size() ; i ++) {
+			
+			String deleteFileName = "";
+			
+			try {
+				attachmentFile.setAtchmnflNo(fileList.get(i).getAtchmnflNo());
+				attachmentFile.setAtchmnflSn(fileList.get(i).getAtchmnflSn());
+				
+				attachmentFileService.deleteAttachmentFile(attachmentFile);
+				
+				deleteFileName = URLDecoder.decode(fileList.get(i).getAtchmnflStreNm(),"UTF-8");
+				
+				File file = new File(saveFolderPath + File.separator + deleteFileName );
+				
+				boolean result = file.delete();
+				
+				File parentFile = new File (file.getParent(),"s_" + file.getName());
+				result = parentFile.delete();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		int cnt = questionMapper.deleteQuestion(qestnNo);	
+		if(cnt > 0) {
+			res = ServiceResult.OK;
+		}else {
+			res = ServiceResult.FAIL;
+		}
+		
+		return res ;
+		
+	}
 
 
 

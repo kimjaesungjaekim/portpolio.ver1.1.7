@@ -79,12 +79,13 @@ public class AttachmentFileController {
 		return ResponseEntity.ok().headers(headers).body(fileResource);
 	}
 	
-	@GetMapping("/delete/{atchmnflNo}/{atchmnflSn}/{atchmnflStreNm}")
+	@GetMapping("/delete/{atchmnflNo}/{atchmnflSn}/{atchmnflStreNm}/{qestnNo}")
 	@Transactional
 	public String removeAttachmentFile(
 			@PathVariable("atchmnflNo") String atchmnflNo
 			,@PathVariable("atchmnflSn") int atchmnflSn
 			,@PathVariable("atchmnflStreNm") String atchmnflStreNm
+			,@PathVariable("qestnNo") String qestnNo
 		){
 		
 //		HashMap<String, Object> map = new HashMap<>();
@@ -95,7 +96,6 @@ public class AttachmentFileController {
 			
 			attachmentFile.setAtchmnflNo(atchmnflNo);
 			attachmentFile.setAtchmnflSn(atchmnflSn);
-			attachmentFile.setAtchmnflStreNm(atchmnflStreNm);
 			
 			attachmentService.deleteAttachmentFile(attachmentFile);
 			
@@ -112,7 +112,7 @@ public class AttachmentFileController {
 			e.printStackTrace();
 		}
 		
-		return "redirect:question/questionModifyForm/" + atchmnflNo ;
+		return "redirect:/question/questionModifyForm/" + qestnNo ;
 	}
 	
 	

@@ -36,9 +36,24 @@ public interface AttachmentFileService {
 	 */
 	public AttachmentFileVO retrieveAttachmentFileOne(AttachmentFileVO attachmentFile) throws NotFoundException;
 	
+	/**
+	 * 게시물 등록 시 첫 등록 파일
+	 * @param attachmentFile
+	 * @throws Exception
+	 */
 	public void firstCreateAttachmentFile(AttachmentFileVO attachmentFile) throws Exception;
 	
+	/**
+	 * 게시물 등록시 첫 파일 등록 이후의 파일들
+	 * @param attachmentFile
+	 * @throws Exception
+	 */
 	public void afterCreateAttachmentFile(AttachmentFileVO attachmentFile) throws Exception;
 	
+	/**
+	 * 게시물 수정 화면에서 파일 개별 삭제
+	 * @param attachmentFile
+	 */
 	public void deleteAttachmentFile(AttachmentFileVO attachmentFile);
+	
 }

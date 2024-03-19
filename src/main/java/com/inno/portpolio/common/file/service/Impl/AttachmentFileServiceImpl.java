@@ -58,14 +58,13 @@ public class AttachmentFileServiceImpl implements AttachmentFileService {
 		}
 		
 	}
-
+	
 	@Override
 	public void deleteAttachmentFile(AttachmentFileVO attachmentFile) {
 		
 		attachmentFileMapper.deleteAttachmentFile(attachmentFile);
 		
-		
-	}
+	};
 	
 	@Override
 	public List<AttachmentFileVO> selectAttachmentFile(String atchmnflNo) {
@@ -73,7 +72,7 @@ public class AttachmentFileServiceImpl implements AttachmentFileService {
 		return attachmentFileMapper.selectAttachmentFile(atchmnflNo);
 	}
 	
-	
+	// 파일 다운로드
 	@Override
 	public AttachmentFileVO retrieveAttachmentFileOne(AttachmentFileVO attachmentFile) throws NotFoundException {
 		

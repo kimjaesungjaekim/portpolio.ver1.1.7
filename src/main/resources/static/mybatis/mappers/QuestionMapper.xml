@@ -195,4 +195,20 @@
 		    
 		WHERE QESTN_NO = #{qestnNo,jdbcType=VARCHAR}    
 	</update>
+	
+	<update id="updateQuestion" parameterType="com.inno.portpolio.question.vo.QuestionVO">
+		UPDATE QUESTION
+		
+		SET  QESTN_TITLE = #{qestnTitle,jdbcType=VARCHAR}
+		    ,QESTN_CONTENT = #{qestnContent,jdbcType=VARCHAR}
+		    ,QESTN_PASSWORD = #{qestnPassword,jdbcType=VARCHAR}
+		    ,ATCHMNFL_NO = #{atchmnflNo,jdbcType=VARCHAR}
+		    
+		WHERE QESTN_NO = #{qestnNo,jdbcType=VARCHAR}		
+	</update>
+	
+	<delete id="deleteQuestion" parameterType="String">
+		DELETE FROM QUESTION
+		WHERE QESTN_NO = #{qestnNo,jdbcType=VARCHAR}
+	</delete>
 </mapper>

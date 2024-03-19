@@ -27,6 +27,43 @@ $(function(){
     	
     	console.log(" 패스워드 타입 확인 : ", btnType);
 	});
+	
+	$("#modifyQuestionFormBtn").on("click",function(event){
+		event.preventDefault();
+		
+		let formData = new FormData($("#questionModifyForm")[0]);
+		
+		console.log("formdata 확인 : ", formData);
+		
+		let fileList = $("#input")[0].files;
+		
+		formData.append("fileList",fileList);
+		
+		console.log("파일 체크 :",fileList);
+		
+		$.ajax({
+			url : "/question/modify",
+			type: "POST",
+			contentType: false,
+			processData : false,
+			data: formData,
+			dataType: "json",
+			success : function(resp){
+				if(resp.result =="OK"){
+					alert(resp.message);
+					location.reload();
+				}else{
+					alert(resp.message);
+				}
+			},
+			error : function(xhr, status,err){
+				
+				console.log("상태 : ", status);
+				console.log("에러 : ", err);
+				alert("잘못된 요청 발생 !");
+			}
+		});
+	});
 });		
 	
 	////////////파일 드래그엔 드롭 스크립트/////////////////////////
@@ -80,7 +117,7 @@ document.addEventListener("drop", (event) => {
     handleUpdate([...files]);
     
     const fileInput = $("#input").val(...files);
-    //formData.append('fileList', ...files)
+    formData.append('fileList', ...files)
   }
 });
 
@@ -138,43 +175,3 @@ function el(nodeName, attributes, ...children) {
 
   return node;
 }
-	/////////////////////////////////////////////////////////
-/*	
-$(function(){
-	$("#qnaAddForm").on("submit",function(event){
-		event.preventDefault();
-		
-		//let data = $(this).serialize();
-		let data = {
-	        userNm: $("#userNm").val(),
-	        userTel: $("#userTel").val(),
-	        userEmail: $("#userEmail").val(),
-	        userIntroduce: $("#userIntroduce").val(),
-    	};
-		
-		console.log("data", data);
-		
-		$.ajax({
-			url : "/question/add",
-			method : "POST",
-			data : JSON.stringify(data) ,
-//			data : formData ,
-			dataType : 'json',
-			contentType: 'application/json',
-			success : function(resp){
-				if(resp.result =="OK"){
-					alert(resp.message);
-					location.reload();
-				}else{
-					alert(resp.message);
-				}
-			},
-			error : function(xhr, status,err){
-				console.log("상태 : ", status);
-				console.log("에러 : ", err);
-				alert("잘못된 요청 발생 !");
-			}
-		});
-	});
-});
-*/

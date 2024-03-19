@@ -86,7 +86,7 @@ public interface QuestionMapper {
 	 * @param question
 	 * @return
 	 */
-	public int deleteQuestion(QuestionVO question);
+	public int deleteQuestion(String qestnNo);
 
 	/**
 	 * 등록된 질문사항 글 답변글 Update

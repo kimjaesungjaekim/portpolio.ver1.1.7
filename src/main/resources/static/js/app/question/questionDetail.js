@@ -75,6 +75,42 @@
 		}
 		questionModifyAjax(data);
 	 });
+	 
+	 //게시글 삭제
+	 $("#questionDetailRemoveBtn").on("click",function(){
+		
+		let qestnNo=$("#questionDiv").data("qestn-no");
+		
+		let confirmed = confirm("정말로 삭제 하시겠습니까? - 등록된 파일도 삭제 됩니다. -");
+		
+		if(confirmed){
+			
+			$.ajax({
+	        url: `/question/remove/${qestnNo}`,  
+	        type: 'GET',  
+	        //data: qestnNo,
+	        dataType: "json",
+	        //contentType: 'application/json',
+	        success : function(resp){
+				if(resp.result =="OK"){
+					alert(resp.message);
+					location.href="/question/main";
+				}else{
+					alert(resp.message);
+				}
+			},
+		 	error : function(xhr, status,err){
+		 		console.log("상태 : ", status);
+		 		console.log("에러 : ", err);
+		 		alert("잘못된 요청 발생 !");
+		 	}
+	 	});
+		}else {
+			alert("잘 선택하셨습니다.");
+		}
+		
+		 
+	 });
 	
 	 
  });
