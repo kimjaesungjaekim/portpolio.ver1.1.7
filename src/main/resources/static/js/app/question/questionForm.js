@@ -32,8 +32,9 @@ $(function(){
 		event.preventDefault();
 		
 		let formData = new FormData($("#questionModifyForm")[0]);
-		
 		console.log("formdata 확인 : ", formData);
+		
+		let qesntNo = $("#qestnNo").val();
 		
 		let fileList = $("#input")[0].files;
 		
@@ -51,7 +52,7 @@ $(function(){
 			success : function(resp){
 				if(resp.result =="OK"){
 					alert(resp.message);
-					location.reload();
+					location.href="/question/detail/"+qesntNo;
 				}else{
 					alert(resp.message);
 				}

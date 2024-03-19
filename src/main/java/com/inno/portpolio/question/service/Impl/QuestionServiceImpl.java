@@ -213,22 +213,22 @@ public class QuestionServiceImpl implements QuestionService {
 	                fileExistsInDB=true; // 초기화 해서 계속 false 값 유지
 	                
 	                for(int j =0; j < DBAttachmentFile.size(); j++) {
-	                	if(! atch.getOriginalFilename().equals(DBAttachmentFile.get(j).getAtchmnflNm())) {
+	                	if(! atch.getOriginalFilename().equals(DBAttachmentFile.get(j).getAtchmnflNm())){
 	                		fileExistsInDB =false;
 	                		
 	                		break;  // 존재 할때
 	                	}
 	                }
 	                
-	                if(!fileExistsInDB) {
+	                if(!fileExistsInDB || question.getAtchmnflNo() == null || question.getAtchmnflNo().equals("")) {
 	                	atchmnfl.setMultipartFile(atch);
 	                	atchmnfl.setAtchmnflStrePath(saveFolder.getCanonicalPath());
 	                	
-	                	atchmnfl.setAtchmnflSn(question.getFileList().size()+1);
+	                	atchmnfl.setAtchmnflSn(DBAttachmentFile.size()+1);
 	                	
 	                	log.info("atchmnfl  파일 첨부 개별 정보 : {}", atchmnfl);
 	                	
-	                	if (DBAttachmentFile.size() == 0) {
+	                	if (DBAttachmentFile.size() == 0){
 	                		
 	                		attachmentFileService.firstCreateAttachmentFile(atchmnfl);
 	                		commonAtchmnflNo = atchmnfl.getAtchmnflNo(); // 첫 번째 파일의 atchmnflNo 저장

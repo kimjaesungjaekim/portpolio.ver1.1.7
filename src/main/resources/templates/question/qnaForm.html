@@ -98,7 +98,7 @@
 	<div th:if="${questionOne != null and attachmentFile != null}" class="container mt-5">
 	    <h2>QnA 글 수정</h2>
 	    <form id="questionModifyForm" action="/question/modify" method="POST" enctype="multipart/form-data">
-	    	<input type="hidden" name="qestnNo" th:value="${questionOne.qestnNo}" />
+	    	<input type="hidden" id="qestnNo" name="qestnNo" th:value="${questionOne.qestnNo}" />
 	    	<input type="hidden" name="atchmnflNo" th:value="${questionOne.atchmnflNo}" />
 	        <!-- 제목 입력 -->
 	        <div class="form-group">
