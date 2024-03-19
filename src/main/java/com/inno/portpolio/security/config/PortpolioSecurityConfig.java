@@ -80,7 +80,7 @@ public class PortpolioSecurityConfig extends WebSecurityConfigurerAdapter {
     	
     	http
     		.authorizeRequests()
-	    		.antMatchers("/css/**", "/js/**", "/img/**", "/vendor/**").permitAll()
+	    		.antMatchers("/css/**", "/js/**", "/img/**", "/vendor/**","/images/**").permitAll()
 	    		.antMatchers("/login/**","/users/**").permitAll()
 	    		.antMatchers("/main/**","/review/**","/question/**","/information/**").hasAnyRole("USER","ADMIN")
 	    		.antMatchers("/admin/**").hasRole("ADMIN")
