@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <meta charset="UTF-8">
     <title>QnA</title>
+    
 </head>
 <body>
 <div class="container mt-5">
@@ -19,15 +20,28 @@
 	    </div>
 	    <div id="questionDiv" th:data-qestn-no="${questionOne.qestnNo}" 
 	    					th:if="${questionOne !=null}" class="card-body">
-	        <label>제목</label>
-	        <h4 class="card-title" th:text="${questionOne.qestnTitle}"></h4>
-	        <label>작성자</label>
-	        <h4 class="card-writer" th:text="${questionOne.userId}"></h4>
-	       <label>내용</label>
-	        <p class="card-subtitle mb-2 text-muted" th:text="${questionOne.qestnContent}"></p>
-	     	<label>작성일자</label>
-	        <p class="card-text" th:text="${questionOne.qestnDate}"></p>
-	        파일 업로드한 목록
+	    	<div class="table-responsive">
+	            <table class="table table-striped mt-4" id="dataTable">
+	                    <tr>
+	                        <th>제목</th>
+	                        <td th:text="${questionOne.qestnTitle}"></td>
+	                        <th>작성자</th>
+	                        <td th:text="${questionOne.userId}"></td>
+	                        <th>작성일자</th>
+	                        <td th:text="${questionOne.qestnDate}"></td>
+	                    </tr>
+	                    <tr><th>내용</th></tr>
+	                    <tr><td colspan=6>
+	                        	<textarea rows="9" class="form-control" readonly th:text="${questionOne.qestnContent}"></textarea>
+	                        </td></tr>
+	            </table>
+	        </div>
+	        <div >
+	        	<p>파일 업로드한 목록</p>
+	        	<div th:with="atchmnflNo=${questionOne.atchmnflNo} , qestnTitle=${questionOne.qestnTitle}">
+	        	<a th:href="@{/attachmentFile/download/zip/{qestnTitle}/{atchmnflNo}(qestnTitle=${qestnTitle},atchmnflNo=${atchmnflNo})}" class="btn btn-primary">ZIP 다운로드</a>
+				</div>
+	        </div>
 	        <div th:if="${attachmentFile != null}">
 	            <ul th:each="file : ${attachmentFile}">
 		            <li th:text="${file.atchmnflSn}">첨부파일 순번</li>
